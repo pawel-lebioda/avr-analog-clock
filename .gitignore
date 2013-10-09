@@ -1,0 +1,9 @@
+# Object files
+*.o
+
+# Library files
+*.a
+
+# Binary files
+*.bin
+*.hex
