@@ -7,3 +7,12 @@
 # Binary files
 *.bin
 *.hex
+*.elf
+
+# AVR GCC files
+*.eep
+*.lss
+*.lst
+*.map
+*.sym
+.dep
