@@ -1,5 +1,31 @@
+#----------------------------------------------------------------------------
+# On command line:
+#
+# make all = Make software.
+#
+# make clean = Clean out built project files.
+#
+# make coff = Convert ELF to AVR COFF.
+#
+# make extcoff = Convert ELF to AVR Extended COFF.
+#
+# make program = Download the hex file to the device, using avrdude.
+#                Please customize the avrdude settings below first!
+#
+# make debug = Start either simulavr or avarice as specified for debugging, 
+#              with avr-gdb or avr-insight as the front end for debugging.
+#
+# make filename.s = Just compile filename.c into the assembler code only.
+#
+# make filename.i = Create a preprocessed source file for use in submitting
+#                   bug reports to the GCC project.
+#
+# To rebuild project do "make clean" then "make all".
+#----------------------------------------------------------------------------
+
+
 # MCU name
-MCU = at90s2313
+MCU = attiny2313
 
 
 # Processor frequency.
@@ -17,8 +43,10 @@ FORMAT = ihex
 # Target file name (without extension).
 TARGET = avr-analog-clock
 
+
 # List C source files here. (C dependencies are automatically generated.)
 SRC = src/main.c
+SRC+= src/i2c.c
 
 # List Assembler source files here.
 #     Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -144,7 +172,6 @@ EXTMEMOPTS =
 LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
-LDFLAGS += -Wl,--section-start=.exram=0x800500
 
 
 
@@ -156,32 +183,14 @@ LDFLAGS += -Wl,--section-start=.exram=0x800500
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = stk200
+AVRDUDE_PROGRAMMER = stk500
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = /dev/parport0
-
-# LFUSE   CKDIV8 CKOUT SUT1 SUT0 CKSEL3210
-#         1     1     0    1     0010 => 0x5f
-LFUSE = 0xd2
-# HFUSE  OCDEN JTAGEN SPIEN WDTON EESAVE BOOTSZ10 BOOTRST
-#         1     1     0     1      0      00       1 => 0xd1
-HFUSE = 0xd1
-# EFUSE X X X M161C BODLEVEL210 X
-#      1 1 1   1      110      1 => 0xfd
-EFUSE = 0xfd
-# LOCK X X BLB12 BLB11 BLB02 BLB01 BL2 BL1
-#      0 0   0     0     0     0    1   1 => 0x03
-LOCK = 0x03
-
+AVRDUDE_PORT = com1    # programmer connected to serial device
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-#AVRDUDE_WRITE_EFUSE = -U efuse:w:$(EFUSE):m
-#AVRDUDE_WRITE_FUSE = -U fuse:w:$(FUSE)
-#AVRDUDE_WRITE_HFUSE = -U hfuse:w:$(HFUSE):m
-#AVRDUDE_WRITE_LFUSE = -U lfuse:w:$(LFUSE):m
-#AVRDUDE_WRITE_LOCK = -U lock:w:$(LOCK):m
+
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
@@ -210,12 +219,12 @@ AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
 DEBUG_MFREQ = $(F_CPU)
 
 # Set the DEBUG_UI to either gdb or insight.
-DEBUG_UI = gdb
-#DEBUG_UI = insight
+# DEBUG_UI = gdb
+DEBUG_UI = insight
 
 # Set the debugging back-end to either avarice, simulavr.
-#DEBUG_BACKEND = avarice
-DEBUG_BACKEND = simulavr
+DEBUG_BACKEND = avarice
+#DEBUG_BACKEND = simulavr
 
 # GDB Init Filename.
 GDBINIT_FILE = __avr_gdbinit
@@ -224,7 +233,7 @@ GDBINIT_FILE = __avr_gdbinit
 JTAG_DEV = /dev/com1
 
 # Debugging port used to communicate between GDB / avarice / simulavr.
-DEBUG_PORT = 4243
+DEBUG_PORT = 4242
 
 # Debugging host used to communicate between GDB / avarice / simulavr, normally
 #     just set to localhost unless doing some sort of crazy debugging when 
@@ -310,10 +319,7 @@ begin:
 	@echo
 	@echo $(MSG_BEGIN)
 
-end:#ifndef _mDELAY_H
-#define _mDELAY_H
-
-
+end:
 	@echo $(MSG_END)
 	@echo
 
@@ -341,7 +347,7 @@ gccversion :
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVRDUDE_WRITE_EFUSE) $(AVRDUDE_WRITE_FUSE) $(AVRDUDE_WRITE_HFUSE) $(AVRDUDE_WRITE_LFUSE) $(AVRDUDE_WRITE_LOCK)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 
 # Generate avr-gdb config/init file which does the following:
@@ -367,7 +373,7 @@ ifeq ($(DEBUG_BACKEND), avarice)
 	@$(WINSHELL) /c pause
 	
 else
-	simulavr --gdbserver --device $(MCU) --clock-freq \
+	@$(WINSHELL) /c start simulavr --gdbserver --device $(MCU) --clock-freq \
 	$(DEBUG_MFREQ) --port $(DEBUG_PORT)
 endif
 	@$(WINSHELL) /c start avr-$(DEBUG_UI) --command=$(GDBINIT_FILE)
@@ -400,7 +406,7 @@ extcoff: $(TARGET).elf
 %.hex: %.elf
 	@echo
 	@echo $(MSG_FLASH) $@
-	$(OBJCOPY) -O $(FORMAT) -R .eeprom -R .exram $< $@
+	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
 %.eep: %.elf
 	@echo
