@@ -32,11 +32,11 @@
 
 #define PINS_CONFIGURE(name, mode)	if((mode) == PIN_DIR_IN)					\
 					{								\
-						_PORT(name##_PORT) &= ~((name##_MASK)<<(name##_SHIFT));	\
+						_DDR(name##_PORT) &= ~((name##_MASK)<<(name##_SHIFT));	\
 					}								\
 					else								\
 					{								\
-						_PORT(name##_PORT) |= ((name##_MASK)<<(name##_SHIFT));	\
+						_DDR(name##_PORT) |= ((name##_MASK)<<(name##_SHIFT));	\
 					}
 
 #define PINS_SET(name, val)		{								\

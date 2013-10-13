@@ -25,6 +25,7 @@ main(void)
 {
 	uint8_t c =0;
 	analog_clock_init();
+	display_init();
 	interrupt_timer0_init();
 	sei();
 	while(1)
@@ -38,7 +39,6 @@ main(void)
 
 ISR(TIMER0_OVF0_vect)
 {
-	//timer_tick();
 	TCNT0 = 255-43;
 	display_process();
 }

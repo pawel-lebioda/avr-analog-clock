@@ -26,7 +26,7 @@ void display_process(void)
 	}
 	PINS_SET(DISPLAY_ANODE, DISPLAY_ANODE_MASK);
 	PINS_SET(DISPLAY_ABCD, display.segments[display.first+display.flicker]);
-	PINS_CLR(DISPLAY_ANODE, (1<<display.flicker));
+	PINS_CLR(DISPLAY_ANODE, (1<<(DISPLAY_SEGMENTS-1-display.flicker)));
 	display.flicker = (display.flicker+1)%DISPLAY_SEGMENTS;
 }
 
@@ -43,7 +43,7 @@ void display_set_u8(uint8_t val)
 {
 	uint8_t * ptr = &display.segments[display.first];
 	*(ptr++) = 0xff;
-	if(val > 100)
+	if(val >= 100)
 	{
 		*(ptr++) = val/100;
 		val %= 100;
@@ -52,7 +52,7 @@ void display_set_u8(uint8_t val)
 	{
 		*(ptr++) = 0xff;
 	}
-	if(val > 10)
+	if(val >= 10)
 	{
 		*(ptr++) = val/10;
 		val %= 10;

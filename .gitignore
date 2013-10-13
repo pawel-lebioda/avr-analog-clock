@@ -16,3 +16,6 @@
 *.map
 *.sym
 .dep
+
+# vim swap files
+*.swp
