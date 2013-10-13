@@ -3,4 +3,6 @@
 #include <conf.h>
 
 
-
+void display_init(void)
+{
+}

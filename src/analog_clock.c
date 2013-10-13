@@ -10,17 +10,17 @@ static inline void analog_clock_delay(void)
 
 static uint8_t analog_clock_get_ticks(uint8_t val)
 {
-	if(val > 7) val++;
-	if(val > 14) val++;
-	if(val > 21) val++;
-	if(val > 28) val++;
-	if(val > 35) val++;
-	if(val > 42) val++;
-	if(val > 49) val++;
-	if(val > 56) val++;
-	if(val == 60) val+=4;
+	uint8_t ret = val;
+	if(val > 7) ret++;
+	if(val > 14) ret++;
+	if(val > 21) ret++;
+	if(val > 28) ret++;
+	if(val > 35) ret++;
+	if(val > 42) ret++;
+	if(val > 49) ret++;
+	if(val > 56) ret++;
 
-	return val;
+	return ret;
 }
 
 static void analog_clock_gen_ticks(uint8_t ticks)
@@ -54,7 +54,7 @@ void analog_clock_set(uint8_t val)
 	
 	analog_clock_clr();
 	
-	PIN_SET(SR74LS164_AB);
+	PIN_CLR(SR74LS164_AB);
 	
 	ticks = analog_clock_get_ticks(val);
 	analog_clock_gen_ticks(ticks);
@@ -64,7 +64,7 @@ void analog_clock_clr(void)
 {
 	uint8_t ticks = 0;
 	
-	PIN_CLR(SR74LS164_AB);
+	PIN_SET(SR74LS164_AB);
 	
 	ticks = analog_clock_get_ticks(60);
 	analog_clock_gen_ticks(ticks);
