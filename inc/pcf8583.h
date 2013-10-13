@@ -12,9 +12,11 @@
 
 #define PCF8583_RES_OK	0
 
+struct pcf8583_time;
+
 void pcf8583_init(void);
 uint8_t pcf8583_get_time(struct pcf8583_time * time);
 uint8_t pcf8583_set_time(struct pcf8583_time * time);
 
 
-#define //_PCF8583_H
+#endif //_PCF8583_H

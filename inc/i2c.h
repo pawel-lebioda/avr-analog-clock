@@ -1,6 +1,8 @@
 #ifndef _I2C_H
 #define _I2C_H
 
+#include <stdint.h>
+
 #define I2C_ACK 1
 #define I2C_NACK 0
 
