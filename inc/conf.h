@@ -15,4 +15,7 @@
 #define SR74LS164_CLK_PORT	B
 #define SR74LS164_CLK_PIN	6
 
+#define TIMERS_COUNT		8
+#define TIMER_MS_PER_TICK	1
+
 #endif //_CONF_H
