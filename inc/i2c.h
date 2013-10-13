@@ -9,6 +9,7 @@
 #define I2C_ADDR_W(addr)	(addr)
 #define I2C_ADDR_R(addr)	(addr|0x01)
 
+void i2c_init(void);
 void i2c_start(void);
 void i2c_stop(void);
 uint8_t i2c_send(uint8_t data);

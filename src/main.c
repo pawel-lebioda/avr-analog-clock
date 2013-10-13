@@ -3,58 +3,63 @@
 #include <avr/interrupt.h>
 #include <i2c.h>
 #include <analog_clock.h>
-//#include <timer.h>
 #include <pin.h>
+#include <display.h>
+#include <pcf8583.h>
 
-void interrupt_timer0_init()
+void interrupt_timer0_init(void)
 {
 	TCCR0 &= ~((1<<CS02)|(1<<CS01)|(1<<CS00));
 	TCCR0 |= (1<<CS02)|(0<<CS01)|(0<<CS00);	
 	TIMSK |= (1<<TOIE0);
 }
 
-/*
-void timer_callback(timer_t timer, void * arg)
+void rtc_set_time(struct pcf8583_time * time)
 {
-	static uint8_t c = 0;
-	//timer_set(timer, 1000);
-}
-*/
-int
-main(void)
-{
-	uint8_t c =0;
-	analog_clock_init();
-	display_init();
-	interrupt_timer0_init();
-	sei();
-	while(1)
-	{
-	}
+	static uint8_t buff[4];
+	buff[0] = time->hours>>4;
+	buff[1] = time->hours&0xf;
+	buff[2] = time->minutes>>4;
+	buff[3] = time->minutes&0xf;
+	display_set(buff, 4);
 }
 
 void rtc_process(void)
 {
 	static struct pcf8583_time time;
-	static uint8_t buff[4];
 	pcf8583_get_time(&time);
 	analog_clock_set(time.seconds);
-	buff[0] = time.hours>>4;
-	buff[1] = time.hours&0xf;
-	buff[2] = time.minutes>>4;
-	buff[3] = time.minutes&0xf;
-	display_set(buff, 4);
+	rtc_set_time(&time);
+}
+
+int
+main(void)
+{
+	i2c_init();
+	analog_clock_init();
+	display_init();
+	interrupt_timer0_init();
+	struct pcf8583_time time;
+	time.seconds = 30;
+	time.hours = 0x12;
+	time.minutes = 0x13;
+	rtc_set_time(&time);
+	sei();
+	while(1)
+	{
+
+	}
 }
 
 ISR(TIMER0_OVF0_vect)
 {
 	static uint8_t counter = 0;
 	TCNT0 = 255-43;
-	if(counter == DISPLAY_TIMER_COUNT)
+	if(!(counter%DISPLAY_TIMER_COUNT))
 	{
 		display_process();
 	}
-	if(counter == RTC_TIMER_COUNT)
+	if(!(counter%RTC_TIMER_COUNT))
 	{
 		rtc_process();
 	}

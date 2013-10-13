@@ -70,6 +70,12 @@ static inline void i2c_clr_scl(void)
 	PIN_CLR(I2C_SCL);
 }
 
+void i2c_init(void)
+{
+	PIN_CONFIGURE(I2C_SCL, PIN_DIR_OUT);
+	PIN_CONFIGURE(I2C_SDA, PIN_DIR_OUT);
+}
+
 void i2c_start(void)
 {
 	i2c_set_sda();
