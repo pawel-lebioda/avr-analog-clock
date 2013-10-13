@@ -13,5 +13,7 @@ void i2c_start(void);
 void i2c_stop(void);
 uint8_t i2c_send(uint8_t data);
 uint8_t i2c_get(uint8_t ack);
+uint8_t i2c_reg_write(uint8_t addr, uint8_t reg_addr, uint8_t val);
+uint8_t i2c_reg_read(uint8_t addr, uint8_t reg_addr, uint8_t * o_val);
 
 #endif //I2C_H

@@ -143,3 +143,28 @@ uint8_t i2c_get(uint8_t ack)
 	
 	return temp;
 }
+
+uint8_t i2c_reg_read(uint8_t addr, uint8_t reg_addr, uint8_t * o_val)
+{
+	i2c_start();
+	i2c_send(I2C_ADDR_W(addr));
+	i2c_send(reg_addr);
+	i2c_start();
+	i2c_send(I2C_ADDR_R(addr));
+	*o_val = i2c_get(I2C_ACK);
+	i2c_stop();
+
+	return 0;
+}
+
+uint8_t i2c_reg_write(uint8_t addr, uint8_t reg_addr, uint8_t val)
+{
+	i2c_start();
+	i2c_send(I2C_ADDR_W(addr));
+	i2c_send(reg_addr);
+	i2c_send(val);
+	i2c_stop();
+
+	return 0;
+}
+
