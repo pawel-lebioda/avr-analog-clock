@@ -30,4 +30,27 @@
 					}
 				
 
+#define PINS_CONFIGURE(name, mode)	if((mode) == PIN_DIR_IN)					\
+					{								\
+						_PORT(name##_PORT) &= ~((name##_MASK)<<(name##_SHIFT));	\
+					}								\
+					else								\
+					{								\
+						_PORT(name##_PORT) |= ((name##_MASK)<<(name##_SHIFT));	\
+					}
+
+#define PINS_SET(name, val)		{								\
+						uint8_t _tmp = _PORT(name##_PORT);			\
+						_tmp &= ~((name##_MASK)<<(name##_SHIFT));		\
+						_tmp |= (((val)&(name##_MASK))<<(name##_SHIFT));	\
+						_PORT(name##_PORT) = _tmp;				\
+					}
+
+#define PINS_CLR(name, val)		{								\
+						uint8_t _tmp = _PORT(name##_PORT);			\
+						_tmp |= ((name##_MASK)<<(name##_SHIFT));		\
+						_tmp &= ~(((val)&(name##_MASK))<<(name##_SHIFT));	\
+						_PORT(name##_PORT) = _tmp;				\
+					}
+
 #endif //_PIN_H

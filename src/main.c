@@ -24,20 +24,13 @@ int
 main(void)
 {
 	uint8_t c =0;
-	//timer_init();
 	analog_clock_init();
 	interrupt_timer0_init();
-	DDRB |= (1<<0)|(1<<1)|(1<<2)|(1<<3);
-	PORTB &= ~(1<<1);
-	DDRD |= (1<<0)|(1<<1)|(1<<2)|(1<<3);
-	//timer_t timer = timer_alloc(timer_callback);
-	//timer_set(timer, 1000);
 	sei();
 	while(1)
 	{
-		PORTD &= ~((1<<0)|(1<<1)|(1<<2)|(1<<3));
-		PORTD |= (c%10)&0x0f;
 		analog_clock_set(c);
+		display_set_u8(c);
 		c = (c+1)%60;
 		_delay_ms(1000);
 	}
@@ -47,5 +40,6 @@ ISR(TIMER0_OVF0_vect)
 {
 	//timer_tick();
 	TCNT0 = 255-43;
+	display_process();
 }
 
