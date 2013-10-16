@@ -27,6 +27,8 @@ void rtc_set_time(struct pcf8583_time * time)
 void rtc_process(void)
 {
 	static struct pcf8583_time time;
+	time.hours=0;
+	time.minutes=0;
 	pcf8583_get_time(&time);
 	analog_clock_set(time.seconds);
 	rtc_set_time(&time);
@@ -47,22 +49,14 @@ main(void)
 	sei();
 	while(1)
 	{
-
+		rtc_process();
 	}
 }
 
 ISR(TIMER0_OVF0_vect)
 {
 	static uint8_t counter = 0;
+	display_process();
 	TCNT0 = 255-43;
-	if(!(counter%DISPLAY_TIMER_COUNT))
-	{
-		display_process();
-	}
-	if(!(counter%RTC_TIMER_COUNT))
-	{
-		rtc_process();
-	}
-	counter = (counter + 1)%TIMER0_COUNTER_MAX;
 }
 

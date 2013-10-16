@@ -5,6 +5,8 @@
 #include <conf.h>
 #include <pin.h>
 
+#define NOP() {asm volatile("nop"::);}
+
 #define I2C_nhalf (F_CPU/I2C_SPEED/2)
 
 #if I2C_nhalf < 3
@@ -157,7 +159,7 @@ uint8_t i2c_reg_read(uint8_t addr, uint8_t reg_addr, uint8_t * o_val)
 	i2c_send(reg_addr);
 	i2c_start();
 	i2c_send(I2C_ADDR_R(addr));
-	*o_val = i2c_get(I2C_ACK);
+	*o_val = i2c_get(I2C_NACK);
 	i2c_stop();
 
 	return 0;
