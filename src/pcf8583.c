@@ -12,7 +12,7 @@ void pcf8583_init(void)
 
 }
 
-uint8_t pcf8583_get_time(struct pcf8583_time * time)
+uint8_t pcf8583_get_time(struct time * time)
 {
 	uint8_t val = 0;
 	
@@ -29,8 +29,21 @@ uint8_t pcf8583_get_time(struct pcf8583_time * time)
 	return PCF8583_RES_OK;
 }
 
-uint8_t pcf8583_set_time(struct pcf8583_time * time)
+uint8_t pcf8583_set_time(struct time * time)
 {
+	uint8_t val = 0;
+
+	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_HSECONDS, &val);
+
+	val = ((time->seconds/10)<<4)|((time->seconds%10)&0xf);
+	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_SECONDS, &val);
+	
+	val = ((time->minutes/10)<<4)|((time->minutes%10)&0xf);
+	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_MINUTES, &val);
+	
+	val = ((time->hours/10)<<4)|((time->hours%10)&0xf);
+	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_HOURS, &val);
+	
 	return PCF8583_RES_OK;
 }
 

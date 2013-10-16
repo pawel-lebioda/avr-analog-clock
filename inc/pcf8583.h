@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <conf.h>
 #include <i2c.h>
+#include <time.h>
 
 #ifndef PCF8583_A0
 #error PCF8583_A0 not defined
@@ -13,16 +14,9 @@
 
 #define PCF8583_RES_OK	0
 
-struct pcf8583_time
-{
-	uint8_t seconds;
-	uint8_t minutes;
-	uint8_t hours;
-};
-
 void pcf8583_init(void);
-uint8_t pcf8583_get_time(struct pcf8583_time * time);
-uint8_t pcf8583_set_time(struct pcf8583_time * time);
+uint8_t pcf8583_get_time(struct time * time);
+uint8_t pcf8583_set_time(struct time * time);
 
 
 #endif //_PCF8583_H
