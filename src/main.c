@@ -41,6 +41,97 @@ void set_time(struct time * time)
 
 void button_callback(button_t button, button_state_t state)
 {
+	if(STATE_CLOCK == g_state)
+	{
+		if(BUTTON_HOLD==state)
+		{
+			switch(button)
+			{
+			case BUTTON_LEFT:
+				time_inc_hours(&g_time, 1);
+				pcf8583_set_time(&g_time, TIME_SET_HOURS);
+				break;
+			case BUTTON_RIGHT:
+				time_dec_hours(&g_time, 1);
+				pcf8583_set_time(&g_time, TIME_SET_HOURS);
+				break;
+			case BUTTON_BOTH:
+				g_state=STATE_SETTING;
+				break;
+			}
+		}
+	}
+	else if(STATE_SETTING_HOURS == g_state)
+	{
+		if(BUTTON_PRESSED==state)
+		{
+			switch(button)
+			{
+			case BUTTON_LEFT:
+				time_inc_hours(&g_time, 1);
+				break;
+			case BUTTON_RIGHT:
+				time_dec_hours(&g_time, 1);
+				break;
+			case BUTTON_BOTH:
+				g_state=STATE_SETTING_MINUTES;
+				break;
+			}
+		}
+		else if(BUTTON_HOLD==state)
+		{
+			switch(button)
+			{
+			case BUTTON_LEFT:
+				time_inc_hours(&g_time, 10);
+				break;
+			case BUTTON_RIGHT:
+				time_dec_hours(&g_time, 10);
+				break;
+			case BUTTON_BOTH:
+				pcf8583_set_time(&g_time, TIME_CLR_SECONDS|TIME_SET_MINUTES|TIME_SET_HOURS);
+				g_state = STATE_CLOCK;
+				break;
+			}
+
+		}
+	}
+	else if(STATE_SETTING_MINUTES == g_state)
+	{
+		if(BUTTON_PRESSED==state)
+		{
+			switch(button)
+			{
+			case BUTTON_LEFT:
+				time_inc_minutes(&g_time, 1);
+				break;
+			case BUTTON_RIGHT:
+				time_dec_minutes(&g_time, 1);
+				break;
+			case BUTTON_BOTH:
+				pcf8583_set_time(&g_time, TIME_CLR_SECONDS|TIME_SET_MINUTES|TIME_SET_HOURS);
+				g_state = STATE_CLOCK;
+				break;
+			}
+		}
+		else if(BUTTON_HOLD==state)
+		{
+			switch(button)
+			{
+			case BUTTON_LEFT:
+				time_inc_minutes(&g_time, 10);
+				break;
+			case BUTTON_RIGHT:
+				time_dec_minutes(&g_time, 10);
+				break;
+			case BUTTON_BOTH:
+				pcf8583_set_time(&g_time, TIME_CLR_SECONDS|TIME_SET_MINUTES|TIME_SET_HOURS);
+				g_state = STATE_CLOCK;
+				break;
+			}
+
+		}
+	}
 }
 
 int

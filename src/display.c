@@ -38,3 +38,12 @@ void display_set(uint8_t * buff, uint8_t len)
 	}
 	memcpy(&display.segments[display.first], buff, len);
 }
+
+void display_set_dot(uint8_t mask)
+{
+}
+
+void display_clr_dot(uint8_t mask)
+{
+}
+

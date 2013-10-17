@@ -11,7 +11,6 @@ typedef enum
 typedef enum
 {
 	BUTTON_PRESSED,
-	BUTTON_RELEASED,
 	BUTTON_HOLD
 } button_state_t;
 

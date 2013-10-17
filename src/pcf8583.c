@@ -12,7 +12,7 @@ void pcf8583_init(void)
 
 }
 
-uint8_t pcf8583_get_time(struct time * time)
+void pcf8583_get_time(struct time * time)
 {
 	uint8_t val = 0;
 	
@@ -24,25 +24,29 @@ uint8_t pcf8583_get_time(struct time * time)
 	
 	i2c_reg_read(PCF8583_ADDR, PCF8583_REG_HOURS, &val);
 	time->hours = bcd2dec(val);
-	
-	return PCF8583_RES_OK;
 }
 
-uint8_t pcf8583_set_time(struct time * time)
+void pcf8583_set_time(struct time * time, uint8_t mask)
 {
 	uint8_t val = 0;
 
 	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_HSECONDS, val);
+	
+	if(mask&TIME_CLR_SECONDS)
+	{
+		i2c_reg_write(PCF8583_ADDR, PCF8583_REG_SECONDS, val);
+	}
 
-	val = dec2bcd(time->seconds);
-	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_SECONDS, val);
-	
-	val = dec2bcd(time->minutes);
-	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_MINUTES, val);
-	
-	val = dec2bcd(time->hours);
-	i2c_reg_write(PCF8583_ADDR, PCF8583_REG_HOURS, val);
-	
-	return PCF8583_RES_OK;
+	if(mask&TIME_SET_MINUTES)
+	{
+		val = dec2bcd(time->minutes);
+		i2c_reg_write(PCF8583_ADDR, PCF8583_REG_MINUTES, val);
+	}
+
+	if(mask&TIME_SET_HOURS)
+	{
+		val = dec2bcd(time->hours);
+		i2c_reg_write(PCF8583_ADDR, PCF8583_REG_HOURS, val);
+	}
 }
 
