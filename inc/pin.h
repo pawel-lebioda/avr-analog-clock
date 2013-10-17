@@ -18,7 +18,7 @@
 #define DDR_CLR(name)			_DDR(name##_PORT) &= ~(1<<(name##_PIN))
 #define PIN_SET(name)			_PORT(name##_PORT) |= (1<<(name##_PIN))
 #define PIN_CLR(name)			_PORT(name##_PORT) &= ~(1<<(name##_PIN))
-#define PIN(name)			((_PIN(name##_PORT) & (1<<(name##_PIN)))>>(name##_PIN))
+#define PIN_VAL(name)			((_PIN(name##_PORT) & (1<<(name##_PIN)))>>(name##_PIN))
 
 #define PIN_CONFIGURE(name, mode)	if((mode) == PIN_DIR_IN) 	\
 					{				\
@@ -52,5 +52,7 @@
 						_tmp &= ~(((val)&(name##_MASK))<<(name##_SHIFT));	\
 						_PORT(name##_PORT) = _tmp;				\
 					}
+
+#define PINS_VAL(name)			((_PIN(name##_PORT)>>(name##_SHIFT))&(name##_MASK))
 
 #endif //_PIN_H

@@ -59,7 +59,7 @@ static void i2c_clr_sda(void)
 
 static uint8_t i2c_get_sda(void)
 {
-	return PIN(I2C_SDA);
+	return PIN_VAL(I2C_SDA);
 }
 
 static void i2c_set_scl(void)
