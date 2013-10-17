@@ -50,7 +50,7 @@ SRC+= src/i2c.c
 SRC+= src/analog_clock.c
 SRC+= src/pcf8583.c
 SRC+= src/display.c
-#SRC+= src/timer.c
+SRC+= src/buttons.c
 
 # List Assembler source files here.
 #     Make them always end in a capital .S.  Files ending in a lowercase .s

@@ -40,12 +40,21 @@ void analog_clock_set(uint8_t val)
 {
 	uint8_t ticks = 0;
 	
-	analog_clock_clr();
+	if(val > analog_clock_val)
+	{
+		ticks = analog_clock_get_ticks(val) - analog_clock_get_ticks(analog_clock_val);
+	}
+	else 
+	{
+		analog_clock_clr();
+		ticks = analog_clock_get_ticks(val);
+	}
 	
 	PIN_CLR(SR74LS164_AB);
 	
-	ticks = analog_clock_get_ticks(val);
 	analog_clock_gen_ticks(ticks);
+	
+	analog_clock_val = val;
 }
 
 void analog_clock_clr(void)

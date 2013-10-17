@@ -5,7 +5,19 @@
 #include <analog_clock.h>
 #include <pin.h>
 #include <display.h>
+#include <time.h>
 #include <pcf8583.h>
+#include <buttons.h>
+
+enum state
+{
+	STATE_CLOCK,
+	STATE_SETTING,
+	STATE_SETTING_HOURS,
+	STATE_SETTING_MINUTES
+} g_state = STATE_CLOCK;
+
+struct time g_time;
 
 void interrupt_timer0_init(void)
 {
@@ -14,55 +26,50 @@ void interrupt_timer0_init(void)
 	TIMSK |= (1<<TOIE0);
 }
 
-void rtc_set_time(struct pcf8583_time * time)
+void set_time(struct time * time)
 {
 	static uint8_t buff[4];
-	buff[0] = time->hours>>4;
-	buff[1] = time->hours&0xf;
-	buff[2] = time->minutes>>4;
-	buff[3] = time->minutes&0xf;
+	
+	buff[0] = time->hours/10;
+	buff[1] = time->hours%10;
+	buff[2] = time->minutes/10;
+	buff[3] = time->minutes%10;
 	display_set(buff, 4);
+	
+	analog_clock_set(g_time.seconds);
 }
 
-void rtc_process(void)
+void button_callback(button_t button, button_state_t state)
 {
-	static struct pcf8583_time time;
-	pcf8583_get_time(&time);
-	analog_clock_set(time.seconds);
-	rtc_set_time(&time);
 }
 
 int
 main(void)
 {
+	g_state = STATE_CLOCK;
 	i2c_init();
 	analog_clock_init();
 	display_init();
+	buttons_init(button_callback);
 	interrupt_timer0_init();
-	struct pcf8583_time time;
-	time.seconds = 30;
-	time.hours = 0x12;
-	time.minutes = 0x13;
-	rtc_set_time(&time);
 	sei();
 	while(1)
 	{
-
+		if(STATE_CLOCK == g_state)
+		{
+			pcf8583_get_time(&g_time);
+			set_time(&g_time);
+		}
+		else if(STATE_SETTING == g_state)
+		{
+			g_state = STATE_SETTING_HOURS;
+		}
 	}
 }
 
 ISR(TIMER0_OVF0_vect)
 {
-	static uint8_t counter = 0;
+	display_process();
 	TCNT0 = 255-43;
-	if(!(counter%DISPLAY_TIMER_COUNT))
-	{
-		display_process();
-	}
-	if(!(counter%RTC_TIMER_COUNT))
-	{
-		rtc_process();
-	}
-	counter = (counter + 1)%TIMER0_COUNTER_MAX;
 }
 
