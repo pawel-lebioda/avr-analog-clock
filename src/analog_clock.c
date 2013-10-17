@@ -66,9 +66,3 @@ void analog_clock_clr(void)
 	ticks = analog_clock_get_ticks(60);
 	analog_clock_gen_ticks(ticks);
 }
-
-uint8_t analog_clock_get(void)
-{
-	return analog_clock_val;
-}
-

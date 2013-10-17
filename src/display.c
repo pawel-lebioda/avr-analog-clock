@@ -38,29 +38,3 @@ void display_set(uint8_t * buff, uint8_t len)
 	}
 	memcpy(&display.segments[display.first], buff, len);
 }
-
-void display_set_u8(uint8_t val)
-{
-	uint8_t * ptr = &display.segments[display.first];
-	*(ptr++) = 0xff;
-	if(val >= 100)
-	{
-		*(ptr++) = val/100;
-		val %= 100;
-	}
-	else
-	{
-		*(ptr++) = 0xff;
-	}
-	if(val >= 10)
-	{
-		*(ptr++) = val/10;
-		val %= 10;
-	}
-	else
-	{
-		*(ptr++) = 0xff;
-	}
-	*ptr = val;
-}
-
