@@ -28,7 +28,7 @@
 	}
 #endif //I2C_nhalf >= 3
 
-static inline void i2c_hdelay(void)
+static void i2c_hdelay(void)
 {
 #if I2C_nhalf < 1
 	return;
@@ -43,29 +43,29 @@ static inline void i2c_hdelay(void)
 #endif	
 }
 
-static inline void i2c_set_sda(void)
+static void i2c_set_sda(void)
 {
 	DDR_CLR(I2C_SDA);
 	PIN_SET(I2C_SDA);
 }
 
-static inline void i2c_clr_sda(void)
+static void i2c_clr_sda(void)
 {
 	PIN_CLR(I2C_SDA);
 	DDR_SET(I2C_SDA);
 }
 
-static inline uint8_t i2c_get_sda(void)
+static uint8_t i2c_get_sda(void)
 {
 	return PIN(I2C_SDA);
 }
 
-static inline void i2c_set_scl(void)
+static void i2c_set_scl(void)
 {
 	PIN_SET(I2C_SCL);
 }
 
-static inline void i2c_clr_scl(void)
+static void i2c_clr_scl(void)
 {
 	PIN_CLR(I2C_SCL);
 }
