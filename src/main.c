@@ -9,13 +9,16 @@
 #include <pcf8583.h>
 #include <buttons.h>
 
-enum state
+typedef enum state
 {
+	STATE_NONE = 0,
 	STATE_CLOCK,
 	STATE_SETTING,
 	STATE_SETTING_HOURS,
 	STATE_SETTING_MINUTES
-} g_state = STATE_CLOCK;
+} clock_state_t;
+
+clock_state_t g_state = STATE_CLOCK;
 
 struct time g_time;
 
@@ -43,7 +46,7 @@ void button_callback(button_t button, button_state_t state)
 {
 	if(STATE_CLOCK == g_state)
 	{
-		if(BUTTON_HOLD==state)
+		if(BUTTON_STATE_HOLD==state)
 		{
 			switch(button)
 			{
@@ -63,7 +66,7 @@ void button_callback(button_t button, button_state_t state)
 	}
 	else if(STATE_SETTING_HOURS == g_state)
 	{
-		if(BUTTON_PRESSED==state)
+		if(BUTTON_STATE_PRESSED==state)
 		{
 			switch(button)
 			{
@@ -78,7 +81,7 @@ void button_callback(button_t button, button_state_t state)
 				break;
 			}
 		}
-		else if(BUTTON_HOLD==state)
+		else if(BUTTON_STATE_HOLD==state)
 		{
 			switch(button)
 			{
@@ -98,7 +101,7 @@ void button_callback(button_t button, button_state_t state)
 	}
 	else if(STATE_SETTING_MINUTES == g_state)
 	{
-		if(BUTTON_PRESSED==state)
+		if(BUTTON_STATE_PRESSED==state)
 		{
 			switch(button)
 			{
@@ -114,7 +117,7 @@ void button_callback(button_t button, button_state_t state)
 				break;
 			}
 		}
-		else if(BUTTON_HOLD==state)
+		else if(BUTTON_STATE_HOLD==state)
 		{
 			switch(button)
 			{
@@ -154,6 +157,14 @@ main(void)
 		else if(STATE_SETTING == g_state)
 		{
 			g_state = STATE_SETTING_HOURS;
+		}
+		else if(STATE_SETTING_HOURS == g_state)
+		{
+
+		}
+		else if(STATE_SETTING_MINUTES == g_state)
+		{
+
 		}
 	}
 }

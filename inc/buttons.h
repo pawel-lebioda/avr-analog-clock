@@ -3,6 +3,7 @@
 
 typedef enum 
 {
+	BUTTON_NONE = 0,
 	BUTTON_LEFT,
 	BUTTON_RIGHT,
 	BUTTON_BOTH
@@ -10,8 +11,9 @@ typedef enum
 
 typedef enum
 {
-	BUTTON_PRESSED,
-	BUTTON_HOLD
+	BUTTON_STATE_NONE = 0,
+	BUTTON_STATE_PRESSED,
+	BUTTON_STATE_HOLD
 } button_state_t;
 
 typedef void (*button_callback_t)(button_t button, button_state_t state);
