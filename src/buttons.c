@@ -7,11 +7,13 @@ static struct
 	button_callback_t callback;
 	uint8_t counter;
 	uint8_t state;
+	button_state_t last_state;
 } buttons = 
 {
 	0,
 	0,
 	BUTTONS_RELEASED,
+	BUTTON_STATE_NONE
 };
 
 void buttons_init(button_callback_t callback)
@@ -19,21 +21,7 @@ void buttons_init(button_callback_t callback)
 	buttons.callback = callback;
 	buttons.counter = 0;
 	PINS_CONFIGURE(BUTTONS, PIN_DIR_IN);
-}
-
-button_t buttons_decode(uint8_t state)
-{
-	switch(state)
-	{
-	case BUTTONS_PRESSED_LEFT:
-		return BUTTON_LEFT;
-	case BUTTONS_PRESSED_RIGHT:
-		return BUTTON_RIGHT;
-	case BUTTONS_PRESSED_BOTH:
-		return BUTTON_BOTH;
-	default:
-		return BUTTON_NONE;
-	}
+	PINS_SET(BUTTONS, 0x3);
 }
 
 void buttons_process(void)
@@ -45,11 +33,25 @@ void buttons_process(void)
 		if(buttons.counter > BUTTONS_HOLD_COUNTER)
 		{
 			buttons.counter = 0;
-			buttons.callback(buttons_decode(buttons.state), BUTTON_STATE_HOLD);
+			buttons.last_state = BUTTON_STATE_HOLD;
+			buttons.callback((button_t)buttons.state, BUTTON_STATE_HOLD);
 		}
 	}
 	else
 	{
+		if(BUTTONS_RELEASED == state)
+		{
+			if(BUTTON_STATE_NONE == buttons.last_state && buttons.counter > BUTTONS_PRESSED_COUNTER)
+			{
+				buttons.last_state = BUTTON_STATE_PRESSED;
+				buttons.callback((button_t)buttons.state, BUTTON_STATE_PRESSED);
+			}
+			else
+			{
+				buttons.last_state = BUTTON_STATE_NONE;
+			}
+		}
+		buttons.counter=0;
 	}
 
 	buttons.state = state;

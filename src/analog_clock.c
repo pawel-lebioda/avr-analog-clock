@@ -57,6 +57,22 @@ void analog_clock_set(uint8_t val)
 	analog_clock_val = val;
 }
 
+void analog_clock_set_inv(uint8_t val)
+{
+	analog_clock_set(59);
+	
+	PIN_SET(SR74LS164_AB);
+	
+	analog_clock_gen_ticks(analog_clock_get_ticks(val));
+
+	analog_clock_val=0;
+}
+
+uint8_t analog_clock_get(void)
+{
+	return analog_clock_val;
+}
+
 void analog_clock_clr(void)
 {
 	uint8_t ticks = 0;

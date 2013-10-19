@@ -22,7 +22,7 @@ inline void time_inc_hours(struct time * time, uint8_t v)
 
 inline void time_dec_hours(struct time * time, uint8_t v)
 {
-	inc_mod(&time->hours, -v, 24);
+	inc_mod(&time->hours, -(int8_t)v, 24);
 }
 
 inline void time_inc_minutes(struct time * time, uint8_t v)
@@ -32,7 +32,7 @@ inline void time_inc_minutes(struct time * time, uint8_t v)
 
 inline void time_dec_minutes(struct time * time, uint8_t v)
 {
-	inc_mod(&time->minutes, -v, 60);
+	inc_mod(&time->minutes, -(int8_t)v, 60);
 }
 
 #endif //_TIME_H

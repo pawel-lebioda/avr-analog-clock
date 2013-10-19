@@ -38,8 +38,6 @@ void set_time(struct time * time)
 	buff[2] = time->minutes/10;
 	buff[3] = time->minutes%10;
 	display_set(buff, 4);
-	
-	analog_clock_set(g_time.seconds);
 }
 
 void button_callback(button_t button, button_state_t state)
@@ -60,6 +58,7 @@ void button_callback(button_t button, button_state_t state)
 				break;
 			case BUTTON_BOTH:
 				g_state=STATE_SETTING;
+				analog_clock_set_inv(30);
 				break;
 			}
 		}
@@ -77,7 +76,6 @@ void button_callback(button_t button, button_state_t state)
 				time_dec_hours(&g_time, 1);
 				break;
 			case BUTTON_BOTH:
-				g_state=STATE_SETTING_MINUTES;
 				break;
 			}
 		}
@@ -92,8 +90,8 @@ void button_callback(button_t button, button_state_t state)
 				time_dec_hours(&g_time, 10);
 				break;
 			case BUTTON_BOTH:
-				pcf8583_set_time(&g_time, TIME_CLR_SECONDS|TIME_SET_MINUTES|TIME_SET_HOURS);
-				g_state = STATE_CLOCK;
+				g_state=STATE_SETTING_MINUTES;
+				analog_clock_set(30);
 				break;
 			}
 
@@ -152,7 +150,7 @@ main(void)
 		if(STATE_CLOCK == g_state)
 		{
 			pcf8583_get_time(&g_time);
-			set_time(&g_time);
+			analog_clock_set(g_time.seconds);
 		}
 		else if(STATE_SETTING == g_state)
 		{
@@ -166,12 +164,19 @@ main(void)
 		{
 
 		}
+		set_time(&g_time);
 	}
 }
 
 ISR(TIMER0_OVF0_vect)
 {
+	static uint8_t counter = 0;
 	display_process();
+	if(counter++ == 10)
+	{
+		counter=0;
+		buttons_process();
+	}
 	TCNT0 = 255-43;
 }
 
